@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JSON Workbench</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 24px;
+            background: #181c24;
+            color: #e6edf3;
+            font-family: sans-serif;
+        }
+        .editors {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        textarea {
+            box-sizing: border-box;
+            width: 100%;
+            height: 60vh;
+            padding: 14px;
+            border: 1px solid #465166;
+            border-radius: 8px;
+            background: #10141b;
+            color: #e6edf3;
+            font: 14px monospace;
+            tab-size: 4;
+        }
+        button {
+            margin-top: 16px;
+            padding: 12px 20px;
+            cursor: pointer;
+        }
+        .error { color: #ff9898; }
+        @media (max-width: 700px) {
+            .editors { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <h1>JSON Workbench</h1>
+    <p>Проверка и форматирование JSON</p>
+
+    <form method="post">
+        <div class="editors">
+            <div>
+                <label for="source"><h2>Исходный JSON</h2></label>
+                <textarea id="source" name="source"
+                          spellcheck="false">{{ source }}</textarea>
+            </div>
+            <div>
+                <label for="result"><h2>Результат</h2></label>
+                <textarea id="result"
+                          spellcheck="false">{{ result }}</textarea>
+            </div>
+        </div>
+
+        <button type="submit">Форматировать</button>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+    </form>
+</body>
+</html>
