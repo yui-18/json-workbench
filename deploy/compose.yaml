@@ -55,6 +55,26 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  node-exporter:
+    image: prom/node-exporter:v1.12.1
+    restart: unless-stopped
+    pid: host
+    command:
+      - "--path.rootfs=/host"
+      - "--collector.disable-defaults"
+      - "--collector.cpu"
+      - "--collector.meminfo"
+      - "--collector.filesystem"
+      - "--collector.loadavg"
+      - "--collector.uname"
+    volumes:
+      - "/:/host:ro,rslave"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 configs:
   prometheus_config:
     content: |
@@ -67,5 +87,8 @@ configs:
           static_configs:
             - targets: ["web:8000"]
 
+        - job_name: node
+          static_configs:
+            - targets: ["node-exporter:9100"]
 volumes:
   prometheus_data:
