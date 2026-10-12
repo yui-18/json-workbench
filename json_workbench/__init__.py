@@ -12,6 +12,11 @@ FORMAT_REQUESTS = Counter(
     ["status"],
 )
 
+PAGE_VIEWS = Counter(
+    "json_workbench_page_views_total",
+    "Number of successful homepage GET responses",
+)
+
 MESSAGES = {
     "Expecting value": "Здесь должно быть значение",
     "Expecting property name enclosed in double quotes":
@@ -90,9 +95,16 @@ def health():
     return {"status": "ok"}
 
 @app.after_request
-def count_format_requests(response):
+def count_requests(response):
     if request.endpoint == "format_json" and request.method == "POST":
         FORMAT_REQUESTS.labels(status=str(response.status_code)).inc()
+
+    if (
+        request.endpoint == "index"
+        and request.method == "GET"
+        and response.status_code == 200
+    ):
+        PAGE_VIEWS.inc()
 
     return response
 
