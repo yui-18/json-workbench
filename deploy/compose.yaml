@@ -1,3 +1,5 @@
+name: json-workbench
+
 services:
   web:
     image: ${APP_IMAGE:?APP_IMAGE must be set}
