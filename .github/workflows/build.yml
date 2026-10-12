@@ -110,6 +110,7 @@ jobs:
           ssh -F "$RUNNER_TEMP/deploy-ssh/config" deploy-vps 'bash -se' <<'EOF'
           cd /opt/json-workbench
           docker compose pull
+          docker compose up -d --no-deps --force-recreate --wait --wait-timeout 120 prometheus
           docker compose up -d --wait --wait-timeout 120
           docker compose ps
           EOF
