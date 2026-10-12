@@ -1,10 +1,16 @@
 import json
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, Response, jsonify, render_template, request
+from prometheus_client import Counter, CONTENT_TYPE_LATEST, generate_latest
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 1024 * 1024
 
+FORMAT_REQUESTS = Counter(
+    "json_workbench_format_requests_total",
+    "Number of completed JSON formatting requests",
+    ["status"],
+)
 
 MESSAGES = {
     "Expecting value": "Здесь должно быть значение",
@@ -82,3 +88,15 @@ def too_large(_):
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+@app.after_request
+def count_format_requests(response):
+    if request.endpoint == "format_json" and request.method == "POST":
+        FORMAT_REQUESTS.labels(status=str(response.status_code)).inc()
+
+    return response
+
+
+@app.get("/metrics")
+def metrics():
+    return Response(generate_latest(), content_type=CONTENT_TYPE_LATEST)
