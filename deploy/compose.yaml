@@ -1,6 +1,6 @@
 services:
   web:
-    image: ghcr.io/yui-18/json-workbench:latest
+    image: ${APP_IMAGE:?APP_IMAGE must be set}
     restart: unless-stopped
     ports:
       - "80:8000"
