@@ -75,6 +75,37 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  grafana:
+    image: grafana/grafana:12.3.11
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    configs:
+      - source: grafana_datasources
+        target: /etc/grafana/provisioning/datasources/prometheus.yaml
+    volumes:
+      - grafana_data:/var/lib/grafana
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - -q
+        - -O
+        - /dev/null
+        - http://127.0.0.1:3000/api/health
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 configs:
   prometheus_config:
     content: |
@@ -90,5 +121,23 @@ configs:
         - job_name: node
           static_configs:
             - targets: ["node-exporter:9100"]
+
+  grafana_datasources:
+    content: |
+      apiVersion: 1
+
+      datasources:
+        - name: Prometheus
+          uid: prometheus
+          type: prometheus
+          access: proxy
+          url: http://prometheus:9090
+          isDefault: true
+          editable: false
+          jsonData:
+            timeInterval: 15s
+
+
 volumes:
   prometheus_data:
+  grafana_data:
