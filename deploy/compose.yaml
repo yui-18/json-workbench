@@ -79,7 +79,7 @@ services:
     image: grafana/grafana:12.3.11
     restart: unless-stopped
     ports:
-      - "127.0.0.1:3000:3000"
+      - "3000:3000"
     environment:
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_AUTH_ANONYMOUS_ENABLED: "false"
