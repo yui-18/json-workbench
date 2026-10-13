@@ -40,7 +40,7 @@ jobs:
           name: wheel-${{ github.sha }}
           path: dist/*.whl
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 90
 
       - name: Prepare image name
         run: |
@@ -107,13 +107,9 @@ jobs:
 
       - name: Deploy application
         run: |
-          ssh -F "$RUNNER_TEMP/deploy-ssh/config" deploy-vps 'bash -se' <<'EOF'
-          cd /opt/json-workbench
-          docker compose pull
-          docker compose up -d --no-deps --force-recreate --wait --wait-timeout 120 prometheus
-          docker compose up -d --wait --wait-timeout 120
-          docker compose ps
-          EOF
+          ssh -F "$RUNNER_TEMP/deploy-ssh/config" \
+            deploy-vps 'bash -se -- /opt/json-workbench' \
+            < scripts/deploy.sh
 
       - name: Remove SSH credentials
         if: always()
